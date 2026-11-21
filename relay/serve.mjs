@@ -18,7 +18,7 @@ const env = {
   SENTRY_CLIENT_SECRET: process.env.SENTRY_CLIENT_SECRET || 'local-dev-secret',
   GITHUB_TOKEN: process.env.GITHUB_TOKEN || '',
   SITE_REPOS: process.env.SITE_REPOS || JSON.stringify({ 'localhost:8732': REPO, 'cyril-wp.github.io': REPO }),
-  DEDUPE: { get: async k => kv.get(k) ?? null, put: async (k, v) => kv.set(k, v) },
+  DEDUPE: { get: async k => kv.get(k) ?? null, put: async (k, v) => kv.set(k, v), delete: async k => kv.delete(k) },
 };
 
 if (!env.GITHUB_TOKEN) {

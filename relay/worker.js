@@ -82,8 +82,11 @@ async function handle(req, env) {
   const gh = await fetch(`https://api.github.com/repos/${repo}/dispatches`, {
     method: 'POST',
     headers: { authorization: `Bearer ${env.GITHUB_TOKEN}`, accept: 'application/vnd.github+json', 'user-agent': 'pawgents-relay', 'content-type': 'application/json' },
-    body: JSON.stringify({ event_type: 'pawgents-error', client_payload: err }),
+    // GitHub allows at most 10 top-level keys in client_payload, so the report is nested.
+    body: JSON.stringify({ event_type: 'pawgents-error', client_payload: { fingerprint: err.fingerprint, site: err.site, error: err } }),
   });
+  // A failed dispatch must not block the next attempt for 24 h.
+  if (!gh.ok) await env.DEDUPE?.delete(err.fingerprint);
   return new Response(gh.ok ? `dispatched ${err.fingerprint} to ${repo}` : `github ${gh.status}`, { status: gh.ok ? 202 : 502 });
 }
 
