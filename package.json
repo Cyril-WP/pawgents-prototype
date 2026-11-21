@@ -1,0 +1,11 @@
+{
+  "name": "pawgents-prototype",
+  "private": true,
+  "description": "PROTOTYPE: Pawgents catches site errors and hands them to an agent that opens a tested draft PR.",
+  "type": "module",
+  "scripts": {
+    "demo": "node relay/serve.mjs & python3 -m http.server 8732; kill %1",
+    "relay": "node relay/serve.mjs",
+    "smoke": "node relay/smoke.mjs"
+  }
+}

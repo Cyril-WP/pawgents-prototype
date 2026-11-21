@@ -1,0 +1,1 @@
+{"site":"clientsite.sg","message":"TypeError: Cannot read properties of undefined (reading 'price') token=abc123secret","stack":"TypeError: Cannot read properties of undefined (reading 'price')\n    at CartSummary (https://clientsite.sg/_next/static/chunks/app/cart/page-8f2a.js:1:4211)","url":"https://clientsite.sg/cart","ua":"Mozilla/5.0"}

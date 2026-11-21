@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lumen Florist · demo client site</title>
+<script>
+  // Pawgents goes first so it sees every error. Locally (npm run demo) it reports to the local relay; on GitHub Pages it runs in demo mode.
+  (function () {
+    var s = document.createElement('script');
+    s.src = '../embed/pawgents.js';
+    s.dataset.panel = 'always';
+    s.dataset.friendly = 'true';
+    s.dataset.release = 'demo-2026.11.21';
+    var relay = new URLSearchParams(location.search).get('relay') || (location.hostname === 'localhost' ? 'http://localhost:8787/js' : '');
+    if (relay) s.dataset.relay = relay;
+    document.head.appendChild(s);
+  })();
+</script>
+<style>
+  body { margin: 0; font: 16px/1.6 system-ui, sans-serif; background: #FFF8F6; color: #2A1D1A; }
+  .ribbon { background: #B4440E; color: #fff; font: 600 13px system-ui, sans-serif; padding: 8px 16px; text-align: center; }
+  .ribbon a { color: #fff; }
+  header, main, footer { max-width: 900px; margin: 0 auto; padding: 20px 16px; }
+  header { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .logo { font: 700 24px Georgia, serif; }
+  .cart { font-weight: 600; background: #fff; border: 1px solid #EAD7D0; border-radius: 999px; padding: 6px 14px; }
+  h1 { font: 700 clamp(30px, 5vw, 44px)/1.1 Georgia, serif; margin: 8px 0 12px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin: 20px 0; }
+  .card { background: #fff; border: 1px solid #EAD7D0; border-radius: 14px; padding: 16px; display: grid; gap: 8px; }
+  .swatch { height: 120px; border-radius: 10px; }
+  button { font: 600 15px system-ui; padding: 10px 14px; border: 0; border-radius: 10px; background: #2A1D1A; color: #fff; cursor: pointer; }
+  .tools { background: #fff; border: 2px dashed #EAD7D0; border-radius: 14px; padding: 16px; display: grid; gap: 10px; }
+  .tools .row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tools button { background: #fff; color: #2A1D1A; border: 1px solid #2A1D1A; font-weight: 500; }
+  .muted { color: #6B5D53; font-size: 14px; }
+  footer { color: #6B5D53; font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="ribbon">Demo client site with Pawgents installed. Break something, then open the orange paw, bottom left. <a href="../">What is this?</a></div>
+<header><div class="logo">Lumen Florist</div><div class="cart">Cart: <span id="lines">1 item</span> · <span id="total">S$68.00</span></div></header>
+<main>
+  <h1>Flowers across Singapore, same day before 2pm.</h1>
+  <div class="grid">
+    <div class="card"><div class="swatch" style="background:#F4B6C2"></div><b>Rose Dawn bouquet</b><span>S$68</span><button type="button" onclick="addToCart('rose-dawn')">Add to cart</button></div>
+    <div class="card"><div class="swatch" style="background:#C7B8F0"></div><b>Orchid Sky box</b><span>S$92</span><button type="button" onclick="addToCart('orchid-sky')">Add to cart</button></div>
+    <div class="card"><div class="swatch" style="background:#F7F0F3"></div><b>Peony Cloud</b><span>S$120 · from a saved link</span><button type="button" onclick="addToCart('peony-cloud')">Add to cart</button></div>
+  </div>
+  <div class="tools">
+    <b>Other ways this site can break</b>
+    <span class="muted">Each button causes a real failure that real visitors hit. Pawgents catches all of them.</span>
+    <div class="row">
+      <button type="button" id="slots">See delivery slots</button>
+      <button type="button" id="promo">Apply promo code</button>
+      <button type="button" id="login">Log in (leaks a token)</button>
+      <button type="button" id="img">Load gallery</button>
+    </div>
+  </div>
+</main>
+<footer>Lumen Florist is a fictional business for a Webpuppies prototype.</footer>
+<script src="catalog.js"></script>
+<script src="cart.js"></script>
+<script>
+  // Delivery slots API was renamed in the last deploy; the page still calls the old address (404).
+  document.getElementById('slots').onclick = function () { fetch('api/delivery-slots.json').then(function (r) { return r.json(); }); };
+  // Promo service rejects and nobody handles it.
+  document.getElementById('promo').onclick = function () { Promise.reject(new Error('Promo service timed out after 8000ms for code SPRING10')); };
+  // A careless log line that would leak a session token and an email if Pawgents did not scrub it.
+  document.getElementById('login').onclick = function () { throw new Error('Login failed for jamie.tan@example.com with token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NSJ9.abc123def456ghi789'); };
+  // Gallery image path missing after a media library clean-up.
+  document.getElementById('img').onclick = function () { var i = new Image(); i.alt = 'Gallery'; i.src = 'images/gallery-hero.webp'; i.width = 10; document.querySelector('.tools').appendChild(i); };
+</script>
+</body>
+</html>
